@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"x-ui/logger"
+	"ilyass-xui/logger"
 )
 
 func NewErrorf(format string, a ...interface{}) error {

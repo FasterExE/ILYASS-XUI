@@ -3,7 +3,7 @@ package xray
 import (
 	"bytes"
 
-	"x-ui/util/json_util"
+	"ilyass-xui/util/json_util"
 )
 
 type Config struct {

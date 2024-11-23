@@ -142,7 +142,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/FasterExE/ILYASS-XUI/main/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -161,7 +161,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/FasterExE/ILYASS-XUI/main/install.sh)
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         before_show_menu
@@ -179,9 +179,9 @@ update_menu() {
         return 0
     fi
 
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
-    chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/FasterExE/ILYASS-XUI/main/ilyass-xui.sh
+    chmod +x /usr/local/ilyass-xui/ilyass-xui
+    chmod +x /usr/bin/ilyass-xui
 
     if [[ $? == 0 ]]; then
         echo -e "${green}Update successful. The panel has automatically restarted.${plain}"
@@ -201,7 +201,7 @@ legacy_version() {
         exit 1
     fi
     # Use the entered panel version in the download link
-    install_command="bash <(curl -Ls "https://raw.githubusercontent.com/mhsanaei/3x-ui/v$tag_version/install.sh") v$tag_version"
+    install_command="bash <(curl -Ls "https://raw.githubusercontent.com/FasterExE/ILYASS-XUI/v$tag_version/install.sh") v$tag_version"
 
     echo "Downloading and installing panel version $tag_version..."
     eval $install_command
@@ -221,18 +221,18 @@ uninstall() {
         fi
         return 0
     fi
-    systemctl stop x-ui
-    systemctl disable x-ui
-    rm /etc/systemd/system/x-ui.service -f
+    systemctl stop ilyass-xui
+    systemctl disable ilyass-xui
+    rm /etc/systemd/system/ilyass-xui.service -f
     systemctl daemon-reload
     systemctl reset-failed
-    rm /etc/x-ui/ -rf
-    rm /usr/local/x-ui/ -rf
+    rm /etc/ilyass-xui/ -rf
+    rm /usr/local/ilyass-xui/ -rf
 
     echo ""
     echo -e "Uninstalled Successfully.\n"
     echo "If you need to install this panel again, you can use below command:"
-    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)${plain}"
+    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/FasterExE/ILYASS-XUI/master/install.sh)${plain}"
     echo ""
     # Trap the SIGTERM signal
     trap delete_script SIGTERM
@@ -251,8 +251,8 @@ reset_user() {
     [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
     read -rp "Please set the login password [default is a random password]: " config_password
     [[ -z $config_password ]] && config_password=$(date +%s%N | md5sum | cut -c 1-8)
-    /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
-    /usr/local/x-ui/x-ui setting -remove_secret >/dev/null 2>&1
+    /usr/local/ilyass-xui/ilyass-xui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
+    /usr/local/ilyass-xui/ilyass-xui setting -remove_secret >/dev/null 2>&1
     echo -e "Panel login username has been reset to: ${green} ${config_account} ${plain}"
     echo -e "Panel login password has been reset to: ${green} ${config_password} ${plain}"
     echo -e "${yellow} Panel login secret token disabled ${plain}"
@@ -278,7 +278,7 @@ reset_webbasepath() {
     config_webBasePath=$(gen_random_string 10)
 
     # Apply the new web base path setting
-    /usr/local/x-ui/x-ui setting -webBasePath "${config_webBasePath}" >/dev/null 2>&1
+    /usr/local/ilyass-xui/ilyass-xui setting -webBasePath "${config_webBasePath}" >/dev/null 2>&1
     
     echo -e "Web base path has been reset to: ${green}${config_webBasePath}${plain}"
     echo -e "${green}Please use the new web base path to access the panel.${plain}"
@@ -293,13 +293,13 @@ reset_config() {
         fi
         return 0
     fi
-    /usr/local/x-ui/x-ui setting -reset
+    /usr/local/ilyass-xui/ilyass-xui setting -reset
     echo -e "All panel settings have been reset to default."
     restart
 }
 
 check_config() {
-    local info=$(/usr/local/x-ui/x-ui setting -show true)
+    local info=$(/usr/local/ilyass-xui/ilyass-xui setting -show true)
     if [[ $? != 0 ]]; then
         LOGE "get current settings error, please check logs"
         show_menu
@@ -309,7 +309,7 @@ check_config() {
 
     local existing_webBasePath=$(echo "$info" | grep -Eo 'webBasePath: .+' | awk '{print $2}')
     local existing_port=$(echo "$info" | grep -Eo 'port: .+' | awk '{print $2}')
-    local existing_cert=$(/usr/local/x-ui/x-ui setting -getCert true | grep -Eo 'cert: .+' | awk '{print $2}')
+    local existing_cert=$(/usr/local/ilyass-xui/ilyass-xui setting -getCert true | grep -Eo 'cert: .+' | awk '{print $2}')
     local server_ip=$(curl -s https://api.ipify.org)
 
     if [[ -n "$existing_cert" ]]; then
@@ -331,7 +331,7 @@ set_port() {
         LOGD "Cancelled"
         before_show_menu
     else
-        /usr/local/x-ui/x-ui setting -port ${port}
+        /usr/local/ilyass-xui/ilyass-xui setting -port ${port}
         echo -e "The port is set, Please restart the panel now, and use the new port ${green}${port}${plain} to access web panel"
         confirm_restart
     fi
@@ -368,7 +368,7 @@ stop() {
         sleep 2
         check_status
         if [[ $? == 1 ]]; then
-            LOGI "x-ui and xray stopped successfully"
+            LOGI "ilyass-xui and xray stopped successfully"
         else
             LOGE "Panel stop failed, Probably because the stop time exceeds two seconds, Please check the log information later"
         fi
@@ -380,11 +380,11 @@ stop() {
 }
 
 restart() {
-    systemctl restart x-ui
+    systemctl restart ilyass-xui
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        LOGI "x-ui and xray Restarted successfully"
+        LOGI "ilyass-xui and xray Restarted successfully"
     else
         LOGE "Panel restart failed, Probably because it takes longer than two seconds to start, Please check the log information later"
     fi
@@ -394,18 +394,18 @@ restart() {
 }
 
 status() {
-    systemctl status x-ui -l
+    systemctl status ilyass-xui -l
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
 }
 
 enable() {
-    systemctl enable x-ui
+    systemctl enable ilyass-xui
     if [[ $? == 0 ]]; then
-        LOGI "x-ui Set to boot automatically on startup successfully"
+        LOGI "ilyass-xui Set to boot automatically on startup successfully"
     else
-        LOGE "x-ui Failed to set Autostart"
+        LOGE "ilyass-xui Failed to set Autostart"
     fi
 
     if [[ $# == 0 ]]; then
@@ -414,11 +414,11 @@ enable() {
 }
 
 disable() {
-    systemctl disable x-ui
+    systemctl disable ilyass-xui
     if [[ $? == 0 ]]; then
-        LOGI "x-ui Autostart Cancelled successfully"
+        LOGI "ilyass-xui Autostart Cancelled successfully"
     else
-        LOGE "x-ui Failed to cancel autostart"
+        LOGE "ilyass-xui Failed to cancel autostart"
     fi
 
     if [[ $# == 0 ]]; then
@@ -437,7 +437,7 @@ show_log() {
         show_menu
         ;;
     1)
-        journalctl -u x-ui -e --no-pager -f -p debug
+        journalctl -u ilyass-xui -e --no-pager -f -p debug
         if [[ $# == 0 ]]; then
         before_show_menu
         fi
@@ -574,7 +574,7 @@ enable_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/FasterExE/ILYASS-XUI/raw/main/ilyass-xui.sh
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
@@ -588,7 +588,7 @@ update_shell() {
 
 # 0: running, 1: not running, 2: not installed
 check_status() {
-    if [[ ! -f /etc/systemd/system/x-ui.service ]]; then
+    if [[ ! -f /etc/systemd/system/ilyass-xui.service ]]; then
         return 2
     fi
     temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
@@ -818,14 +818,14 @@ update_geo() {
     echo -e "${green}\t0.${plain} Back to Main Menu"
     read -p "Choose an option: " choice
 
-    cd /usr/local/x-ui/bin
+    cd /usr/local/ilyass-xui/bin
 
     case "$choice" in
     0)
         show_menu
         ;;
     1)
-        systemctl stop x-ui
+        systemctl stop ilyass-xui
         rm -f geoip.dat geosite.dat
         wget -N https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
         wget -N https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
@@ -833,7 +833,7 @@ update_geo() {
         restart
         ;;
     2)
-        systemctl stop x-ui
+        systemctl stop ilyass-xui
         rm -f geoip_IR.dat geosite_IR.dat
         wget -O geoip_IR.dat -N https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat
         wget -O geosite_IR.dat -N https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat
@@ -841,7 +841,7 @@ update_geo() {
         restart
         ;;
     3)
-        systemctl stop x-ui
+        systemctl stop ilyass-xui
         rm -f geoip_VN.dat geosite_VN.dat
         wget -O geoip_VN.dat -N https://github.com/vuong2023/vn-v2ray-rules/releases/latest/download/geoip.dat
         wget -O geosite_VN.dat -N https://github.com/vuong2023/vn-v2ray-rules/releases/latest/download/geosite.dat
@@ -963,7 +963,7 @@ ssl_cert_issue_main() {
                 local webKeyFile="/root/cert/${domain}/privkey.pem"
 
                 if [[ -f "${webCertFile}" && -f "${webKeyFile}" ]]; then
-                    /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
+                    /usr/local/ilyass-xui/ilyass-xui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
                     echo "Panel paths set for domain: $domain"
                     echo "  - Certificate File: $webCertFile"
                     echo "  - Private Key File: $webKeyFile"
@@ -986,8 +986,8 @@ ssl_cert_issue_main() {
 }
 
 ssl_cert_issue() {
-    local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
-    local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
+    local existing_webBasePath=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
+    local existing_port=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
     # check for acme.sh first
     if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
         echo "acme.sh could not be found. we will install it"
@@ -1102,7 +1102,7 @@ ssl_cert_issue() {
         local webKeyFile="/root/cert/${domain}/privkey.pem"
 
         if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
-            /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
+            /usr/local/ilyass-xui/ilyass-xui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
             LOGI "Panel paths set for domain: $domain"
             LOGI "  - Certificate File: $webCertFile"
             LOGI "  - Private Key File: $webKeyFile"
@@ -1117,8 +1117,8 @@ ssl_cert_issue() {
 }
 
 ssl_cert_issue_CF() {
-    local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
-    local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
+    local existing_webBasePath=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
+    local existing_port=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
     LOGI "****** Instructions for Use ******"
     LOGI "Follow the steps below to complete the process:"
     LOGI "1. Cloudflare Registered E-mail."
@@ -1219,7 +1219,7 @@ ssl_cert_issue_CF() {
             local webKeyFile="${certPath}/${CF_Domain}/privkey.pem"
 
             if [[ -f "$webCertFile" && -f "$webKeyFile" ]]; then
-                /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
+                /usr/local/ilyass-xui/ilyass-xui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
                 LOGI "Panel paths set for domain: $CF_Domain"
                 LOGI "  - Certificate File: $webCertFile"
                 LOGI "  - Private Key File: $webKeyFile"
@@ -1553,11 +1553,11 @@ remove_iplimit() {
 
 SSH_port_forwarding() {
     local server_ip=$(curl -s https://api.ipify.org)
-    local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
-    local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
-    local existing_listenIP=$(/usr/local/x-ui/x-ui setting -getListen true | grep -Eo 'listenIP: .+' | awk '{print $2}')
-    local existing_cert=$(/usr/local/x-ui/x-ui setting -getCert true | grep -Eo 'cert: .+' | awk '{print $2}')
-    local existing_key=$(/usr/local/x-ui/x-ui setting -getCert true | grep -Eo 'key: .+' | awk '{print $2}')
+    local existing_webBasePath=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'webBasePath: .+' | awk '{print $2}')
+    local existing_port=$(/usr/local/ilyass-xui/ilyass-xui setting -show true | grep -Eo 'port: .+' | awk '{print $2}')
+    local existing_listenIP=$(/usr/local/ilyass-xui/ilyass-xui setting -getListen true | grep -Eo 'listenIP: .+' | awk '{print $2}')
+    local existing_cert=$(/usr/local/ilyass-xui/ilyass-xui setting -getCert true | grep -Eo 'cert: .+' | awk '{print $2}')
+    local existing_key=$(/usr/local/ilyass-xui/ilyass-xui setting -getCert true | grep -Eo 'key: .+' | awk '{print $2}')
 
     local config_listenIP=""
     local listen_choice=""
@@ -1598,7 +1598,7 @@ SSH_port_forwarding() {
             config_listenIP="127.0.0.1"
             [[ "$listen_choice" == "2" ]] && read -p "Enter custom IP to listen on: " config_listenIP
 
-            /usr/local/x-ui/x-ui setting -listenIP "${config_listenIP}" >/dev/null 2>&1
+            /usr/local/ilyass-xui/ilyass-xui setting -listenIP "${config_listenIP}" >/dev/null 2>&1
             echo -e "${green}listen IP has been set to ${config_listenIP}.${plain}"
             echo -e "\n${green}SSH Port Forwarding Configuration:${plain}"
             echo -e "Standard SSH command:"
@@ -1614,7 +1614,7 @@ SSH_port_forwarding() {
         fi
         ;;
     2)
-        /usr/local/x-ui/x-ui setting -listenIP 0.0.0.0 >/dev/null 2>&1
+        /usr/local/ilyass-xui/ilyass-xui setting -listenIP 0.0.0.0 >/dev/null 2>&1
         echo -e "${green}Listen IP has been cleared.${plain}"
         restart
         ;;
@@ -1629,29 +1629,29 @@ SSH_port_forwarding() {
 }
 
 show_usage() {
-    echo "x-ui control menu usages: "
+    echo "ilyass-xui control menu usages: "
     echo "------------------------------------------"
     echo -e "SUBCOMMANDS:"
-    echo -e "x-ui              - Admin Management Script"
-    echo -e "x-ui start        - Start"
-    echo -e "x-ui stop         - Stop"
-    echo -e "x-ui restart      - Restart"
-    echo -e "x-ui status       - Current Status"
-    echo -e "x-ui settings     - Current Settings"
-    echo -e "x-ui enable       - Enable Autostart on OS Startup"
-    echo -e "x-ui disable      - Disable Autostart on OS Startup"
-    echo -e "x-ui log          - Check logs"
-    echo -e "x-ui banlog       - Check Fail2ban ban logs"
-    echo -e "x-ui update       - Update"
-    echo -e "x-ui custom       - custom version"
-    echo -e "x-ui install      - Install"
-    echo -e "x-ui uninstall    - Uninstall"
+    echo -e "ilyass-xui              - Admin Management Script"
+    echo -e "ilyass-xui start        - Start"
+    echo -e "ilyass-xui stop         - Stop"
+    echo -e "ilyass-xui restart      - Restart"
+    echo -e "ilyass-xui status       - Current Status"
+    echo -e "ilyass-xui settings     - Current Settings"
+    echo -e "ilyass-xui enable       - Enable Autostart on OS Startup"
+    echo -e "ilyass-xui disable      - Disable Autostart on OS Startup"
+    echo -e "ilyass-xui log          - Check logs"
+    echo -e "ilyass-xui banlog       - Check Fail2ban ban logs"
+    echo -e "ilyass-xui update       - Update"
+    echo -e "ilyass-xui custom       - custom version"
+    echo -e "ilyass-xui install      - Install"
+    echo -e "ilyass-xui uninstall    - Uninstall"
     echo "------------------------------------------"
 }
 
 show_menu() {
     echo -e "
-  ${green}3X-UI Panel Management Script${plain}
+  ${green}ILYASS-XUI Panel Management Script${plain}
   ${green}0.${plain} Exit Script
 ————————————————
   ${green}1.${plain} Install

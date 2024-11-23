@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"x-ui/database/model"
-	"x-ui/logger"
-	"x-ui/util/json_util"
-	"x-ui/util/random"
-	"x-ui/web/service"
-	"x-ui/xray"
+	"ilyass-xui/database/model"
+	"ilyass-xui/logger"
+	"ilyass-xui/util/json_util"
+	"ilyass-xui/util/random"
+	"ilyass-xui/web/service"
+	"ilyass-xui/xray"
 )
 
 //go:embed default.json

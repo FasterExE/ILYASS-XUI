@@ -9,13 +9,13 @@ import (
 	"syscall"
 	_ "unsafe"
 
-	"x-ui/config"
-	"x-ui/database"
-	"x-ui/logger"
-	"x-ui/sub"
-	"x-ui/web"
-	"x-ui/web/global"
-	"x-ui/web/service"
+	"ilyass-xui/config"
+	"ilyass-xui/database"
+	"ilyass-xui/logger"
+	"ilyass-xui/sub"
+	"ilyass-xui/web"
+	"ilyass-xui/web/global"
+	"ilyass-xui/web/service"
 
 	"github.com/op/go-logging"
 )
@@ -424,7 +424,7 @@ func main() {
 		fmt.Println()
 		fmt.Println("Commands:")
 		fmt.Println("    run            run web panel")
-		fmt.Println("    migrate        migrate form other/old x-ui")
+		fmt.Println("    migrate        migrate form other/old ilyass-xui")
 		fmt.Println("    setting        set settings")
 	}
 
